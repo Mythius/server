@@ -20,6 +20,24 @@ var file = {
 	}
 }
 
+class client{
+	static all = [];
+	constructor(socket){
+		this.socket = socket;
+		client.all.push(this);
+		socket.on('disconnect',e=>{
+			let index = client.all.indexOf(this);
+			if(index != -1){
+				client.all.splice(index,1);
+			}
+			console.log(client.all);
+		});
+	}
+	emit(name,dat){
+		this.socket.emit(name,dat);
+	}
+}
+
 const port = 80;
 const path = __dirname+'/';
 
@@ -31,5 +49,5 @@ app.get(/.*/,function(request,response){
 http.listen(port,()=>{console.log('Serving Port: '+port)});
 
 io.on('connection',socket=>{
-
+	var c = new client(socket);
 });
